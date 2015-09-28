@@ -16,6 +16,7 @@ contract POIRound {
     mapping (uint => Group) public groups;
     mapping (address => User) public users;
     
+    bytes32 entropy;
     uint public numGroups;
     uint public numRegisteredUsers;
     uint public genesisBlock;
