@@ -30,8 +30,8 @@ contract POIRound {
     }
     
     function register () returns(uint groupNum){
-        if (block.number > genesisBlock + registrationTimeInBlocks) return 0;
-        if (users[msg.sender].groupNumber == 0) {
+        if ((block.number < genesisBlock + registrationTimeInBlocks)
+        && (users[msg.sender].groupNumber == 0)) {
             if (groups[numGroups].numUsers == 5) { numGroups++; }
             users[msg.sender].groupNumber = numGroups;
             groups[numGroups].numUsers++;
@@ -40,9 +40,9 @@ contract POIRound {
     }
     
     function verify () returns(bool success){
-        if (block.number < genesisBlock + registrationTimeInBlocks) return false;
-        if (block.number > genesisBlock + registrationTimeInBlocks + validationWindowInBlocks) return false;
-        if (users[msg.sender].groupNumber != 0) {
+        if ((block.number > genesisBlock + registrationTimeInBlocks) 
+        && (block.number < genesisBlock + registrationTimeInBlocks + validationWindowInBlocks) 
+        && (users[msg.sender].groupNumber != 0)) {
             
         }
     }
