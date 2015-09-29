@@ -24,6 +24,19 @@ body {
 	background-color: white;
 }
 
+#notifications {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#notifications li {
+	margin-bottom: 1em;
+	padding: 1em;
+	background-color: #CC5D5D;
+	color: white;
+}
+
 fieldset {
 	opacity: 0.3;
 	position: relative;
