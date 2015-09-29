@@ -5,6 +5,8 @@
 		<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 		<title>POI - Proof of Concept</title>
 		<link rel="stylesheet" href="assets/css/style.css" />
+		<script src="node_modules/web3/dist/web3.js"></script>
+		<script src="assets/js/POIContract.js"></script>
 	</head>
 	<body>
 		
@@ -33,8 +35,8 @@
 				<h2>Step 1:</h2>
 				<div class="status">Time left: {{ timeTillRegistrationEnds }}</div>
 				<p>Register to take part in the upcoming POI round.</p>
-				<div class="details">Registered: <span>false</span></div>
-				<button disabled>Register</button>
+				<div class="details">Registered: <span id="registered">false</span></div>
+				<button id="register" disabled>Register</button>
 			</fieldset>
 			<fieldset class="step2 card">
 				<h2>Step 2:</h2>
