@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+		<title>POI - Proof of Concept</title>
+		<link rel="stylesheet" href="assets/css/style.css" />
+	</head>
+	<body>
+		
+		<div class="header">
+			<h1>POI - Proof of Individuality</h1>
+			<p><em><strong>Proof of concept DApp</strong></em></p>
+			<div class="status card">
+				<p>Current round: <span class="roundNumber">#0</span></p>
+				<p>Registration started: <span class="startTime">Thu Jan 01 1970 00:00:00 GMT+0000 (GMT Standard Time)</span></p>
+				<p>Participating entities: <span class="candidateCount">42</span></p>
+				<p>POI Contract address: <span class="contractAddress">0x692a70d2e424a56d2c6c27aa97d1a86395877b3a</span></p>
+			</div>
+		</div>
+
+		<form action="#">
+
+			<fieldset class="step0 card active">
+				<p>Select account to perform actions against.</p>
+				<select name="account" id="account">
+					<option value="" disabled>Select an account</option>
+				</select>
+			</fieldset>
+			<fieldset class="step1 card active">
+				<h2>Step 1:</h2>
+				<div class="status">Time left: {{ timeTillRegistrationEnds }}</div>
+				<p>Register to take part in the upcoming POI round.</p>
+				<div class="details">Registered: <span>false</span></div>
+				<button disabled>Register</button>
+			</fieldset>
+			<fieldset class="step2 card">
+				<h2>Step 2:</h2>
+				<div class="status">Opens in: {{ timeTillRegistrationEnds }}</div>
+				<p>Request your group assignment.</p>
+				<button disabled>Request group</button>
+			</fieldset>
+			<fieldset class="step3 card">
+				<h2>Step 3:</h2>
+				<div class="status">Opens in: {{ timeTillRegistrationEnds }}</div>
+				<p>Take part in video verification process.</p>
+				<button disabled>Join {{ assignedGroup }} video channel</button>
+			</fieldset>
+			<fieldset class="step4 card">
+				<h2>Step 4:</h2>
+				<p>Provide proof to receive POI token.</p>
+				<input type="text" disabled placeholder="ProofData">
+				<button disabled>Submit proof verification data</button>
+			</fieldset>
+		</form>
+
+	</body>
+</html>

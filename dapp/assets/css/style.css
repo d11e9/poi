@@ -1,0 +1,53 @@
+body {
+	background-color: #DADAE8;
+	font-family: monospace;
+	max-width: 50em;
+	padding: 1em;
+	margin: 0 auto;
+}
+
+.header {
+	padding: 1em;
+}
+
+.header .status span {
+	background-color: #F0F76A;
+	display: inline-block;
+	padding: 0 .2em;
+}
+
+.card {
+	border-radius: 0.25em;
+	margin-bottom: 1em;
+	padding: 1em;
+	border: 1px solid #ccc;
+	background-color: white;
+}
+
+fieldset {
+	opacity: 0.3;
+	position: relative;
+}
+
+fieldset.active {
+	opacity: 1;
+}
+
+fieldset .status {
+	position: absolute;
+	font-size: 10px;
+	top: 1em;
+	right: 1em;
+	padding: 0.4em;
+	border-radius: 0.25em;
+	background-color: #CC5D5D;
+	color: white;
+}
+
+fieldset .details {
+	margin-bottom: 1em;
+}
+
+fieldset .details span {
+	font-weight: bold;
+}
