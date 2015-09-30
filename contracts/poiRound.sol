@@ -1,65 +1,56 @@
-
-// more efficient (gas cost) grouping 
-
-contract POIRound {
+contract poi {
     
-    struct Group {
-        uint numUsers;
-    }
+    uint public numUsers;
+    mapping(address => bytes32) public userHash;
+    mapping(bytes32 => address) public userAddress;
+    mapping(address => uint) public userGroup;
     
-    struct User {
-        uint groupNumber;
-        uint validations;
-        bool registered;
-    }
+    bool debug;
+    uint public blockNum;
+    uint genesisBlock;
+    uint registrationPeriodInBlocks = 7;
+    uint commitmentPeriodInBlocks = 3;
+    uint validityPeriodInBlocks = 20;
     
-    mapping (uint => Group) public groups;
-    mapping (address => User) public users;
+    function blockNumber() returns(uint){ if (debug) { return blockNum; } return block.number; }
     
-    bytes32 entropy;
-    uint public numGroups;
-    uint public numRegisteredUsers;
-    uint public genesisBlock;
-    uint public roundLengthInBlocks;
-    uint public registrationTimeInBlocks;
-    uint public assignmentWindowInBlocks;
-    uint public validationWindowInBlocks;
-    
-    function POIRound() {
-        numGroups = 1;
+    function poi(){
         genesisBlock = block.number;
-        roundLengthInBlocks = 30 * 1000 * 1000;
-        registrationTimeInBlocks = 10 * 1000;
-        assignmentWindowInBlocks = 5 * 1000;
-        validationWindowInBlocks = 3 * 1000;
+        debug = true;
     }
     
-    function register () returns(uint groupNum){
-        if ((block.number < genesisBlock + registrationTimeInBlocks)
-        && (!users[msg.sender].registered)) {
-            users[msg.sender].registered = true;
-            numRegisteredUsers++;
-        }
+    function register() returns(bool success){
+        if ((blockNumber() > genesisBlock + registrationPeriodInBlocks) // registation period over
+        || (userHash[msg.sender] != bytes32(0))) return; // already registered
+        
+        bytes32 h = sha3(msg.sender);
+        userHash[msg.sender] = h;
+        userAddress[h] = msg.sender;
+        numUsers++;
+        return true;
     }
     
-    function assignGroup () returns(uint groupNum) {
-        if ((block.number > genesisBlock + registrationTimeInBlocks)
-        && (block.number < genesisBlock + registrationTimeInBlocks + assignmentWindowInBlocks)
-        && (users[msg.sender].registered)
-        && (users[msg.sender].groupNumber == 0)) {
-            // TODO: now that we have an assignment window, dont assign in order
-            if (groups[numGroups].numUsers == 5) { numGroups++; }
-            users[msg.sender].groupNumber = numGroups;
-            groups[numGroups].numUsers++;
-            return numGroups;
-        }
+    function commit(uint group) returns(bool success){
+        if ((blockNumber() < genesisBlock + registrationPeriodInBlocks) // registation period not yet over
+        || (blockNumber() > genesisBlock + registrationPeriodInBlocks + commitmentPeriodInBlocks) // commitment period over
+        || (userGroup[msg.sender] != 0)) return; // group already assigned
+        
+        userGroup[msg.sender] = group;
+        return true;
     }
     
-    function verify () returns(bool success){
-        if ((block.number > genesisBlock + registrationTimeInBlocks + assignmentWindowInBlocks) 
-        && (block.number < genesisBlock + registrationTimeInBlocks + assignmentWindowInBlocks + validationWindowInBlocks) 
-        && (users[msg.sender].groupNumber != 0)) {
-            // TODO: verify
-        }
+    function verify(bytes proof) returns(bool success){
+        if ((blockNumber() < genesisBlock + registrationPeriodInBlocks + commitmentPeriodInBlocks) // commitment period not yet over
+        || (blockNumber() > genesisBlock + registrationPeriodInBlocks + commitmentPeriodInBlocks + validityPeriodInBlocks) // verification period over
+        || (userGroup[msg.sender] == 0)) return;
+        
+        // TODO :)
+        return true;
     }
+    
+    function _incBlock() { if (debug) blockNum++; }
+    function _myGroupHelper() returns(uint group) {
+        return userGroup[msg.sender];
+    }
+    
 }
