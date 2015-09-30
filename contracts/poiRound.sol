@@ -39,12 +39,13 @@ contract poi {
         return true;
     }
     
-    function verify(bytes proof) returns(bool success){
+    function verify(bytes32 data, uint8 v, bytes32 r, bytes32 s ) returns(bool success){
         if ((blockNumber() < commitmentBlock) // commitment period not yet over
         || (blockNumber() > validityBlock) // verification period over
         || (userGroup[msg.sender] == 0)) return;
         
         // TODO :)
+        ecrecover( data, v, r, s);
         return true;
     }
     
