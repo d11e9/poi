@@ -6,11 +6,11 @@ contract poi {
     mapping(address => uint) public userGroup;
     
     bool debug;
-    uint public blockNum;
-    uint genesisBlock;
-    uint registrationPeriodInBlocks = 7;
-    uint commitmentPeriodInBlocks = 3;
-    uint validityPeriodInBlocks = 20;
+    uint blockNum;
+    uint genesisBlock = block.number;
+    uint registrationBlock = genesisBlock + 7;
+    uint commitmentBlock = registrationBlock + 3;
+    uint validityBlock = commitmentBlock + 20;
     
     function blockNumber() returns(uint){ if (debug) { return blockNum; } return block.number; }
     
@@ -20,7 +20,7 @@ contract poi {
     }
     
     function register() returns(bool success){
-        if ((blockNumber() > genesisBlock + registrationPeriodInBlocks) // registation period over
+        if ((blockNumber() > registrationBlock) // registation period over
         || (userHash[msg.sender] != bytes32(0))) return; // already registered
         
         bytes32 h = sha3(msg.sender);
@@ -31,8 +31,8 @@ contract poi {
     }
     
     function commit(uint group) returns(bool success){
-        if ((blockNumber() < genesisBlock + registrationPeriodInBlocks) // registation period not yet over
-        || (blockNumber() > genesisBlock + registrationPeriodInBlocks + commitmentPeriodInBlocks) // commitment period over
+        if ((blockNumber() < registrationBlock) // registation period not yet over
+        || (blockNumber() > commitmentBlock) // commitment period over
         || (userGroup[msg.sender] != 0)) return; // group already assigned
         
         userGroup[msg.sender] = group;
@@ -40,8 +40,8 @@ contract poi {
     }
     
     function verify(bytes proof) returns(bool success){
-        if ((blockNumber() < genesisBlock + registrationPeriodInBlocks + commitmentPeriodInBlocks) // commitment period not yet over
-        || (blockNumber() > genesisBlock + registrationPeriodInBlocks + commitmentPeriodInBlocks + validityPeriodInBlocks) // verification period over
+        if ((blockNumber() < commitmentBlock) // commitment period not yet over
+        || (blockNumber() > validityBlock) // verification period over
         || (userGroup[msg.sender] == 0)) return;
         
         // TODO :)
