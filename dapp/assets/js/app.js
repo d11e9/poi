@@ -1,17 +1,19 @@
 
-var contracts = {}
-for (var i in Contracts) {
-	contracts[Contracts[i].name] = {
-		address: Contracts[i].address,
-		interface: Contracts[i].interface,
-		bytecode: Contracts[i].bytecode,
-		instance: null
-	}
-}
-
-
+var dapp = {}
 
 window.onload = function(){
+
+	for (var i in uDApp) {
+		dapp[uDApp[i].name] = {
+			address: uDApp[i].address,
+			interface: uDApp[i].interface,
+			bytecode: uDApp[i].bytecode,
+			instance: null
+		}
+
+		if (dapp[uDApp[i].name].address)
+			dapp[uDApp[i].name].instance = web3.eth.contract( JSON.parse( dapp[uDApp[i].name].interface ) ).at( dapp[uDApp[i].name].address );
+	}
 
 	var notifications = document.getElementById('notifications');
 
@@ -34,8 +36,6 @@ window.onload = function(){
 		newNotification( "Unable to connect to ethereum node." );
 	}
 
-	contracts.poi.instance = web3.eth.contract( JSON.parse( contracts.poi.interface ) ).at( contracts.poi.address );
-
 
 	var accountSelector = document.getElementById('account');
 	var step1 = document.querySelector('.step1');
@@ -55,18 +55,13 @@ window.onload = function(){
 	var registrationTimestamp;
 	var commitmentBlock;
 
-	contractAddress.innerHTML = contracts.poi.instance.address;
-
-	web3.eth.getBlockNumber( function(err, result){
-		latestBlock = result;
-		currentBlockNumber.innerHTML = latestBlock;
-	})
+	contractAddress.innerHTML = dapp.poi.instance.address;
 
 	web3.eth.filter('latest', function(err, result){
 		update()
 	})
 
-	contracts.poi.instance.genesisBlock(function(err, blockNumber){
+	dapp.poi.instance.genesisBlock(function(err, blockNumber){
 		console.log("Genesis block: ", blockNumber.toNumber())
 		genesisBlock = blockNumber;
 		web3.eth.getBlock( blockNumber, function(err, block){
@@ -76,18 +71,15 @@ window.onload = function(){
 		})
 	})
 
-	contracts.poi.instance.registrationBlock(function(err, blockNumber){
+	dapp.poi.instance.registrationBlock(function(err, blockNumber){
 		console.log("Registration block: ", blockNumber.toNumber())
 		registrationBlock = blockNumber;
 		update()
 	})
 
-	contracts.poi.instance.Registration( null, function(err,result){
+	dapp.poi.instance.Registration( null, function(err,result){
 		console.log( "Registration event: ", err, result);
-		contracts.poi.instance.numUsers( function(err, result){
-			console.log( "numUsers: ", err, result);
-			candidateCount.innerHTML = result;
-		})
+		update()
 	})
 
 	web3.eth.getAccounts( function(err, accounts) {
@@ -101,11 +93,10 @@ window.onload = function(){
 			item.innerHTML = accounts[i];
 			accountSelector.appendChild( item );
 		}
-		update()
 	});
 
 	accountSelector.addEventListener( 'change', function(ev){
-		contracts.poi.instance.userHash.call( accountSelector.value, function(err, result){
+		dapp.poi.instance.userHash.call( accountSelector.value, function(err, result){
 			console.log ("userHash: ", err, result);
 			var userHash = web3.toBigNumber( result );
 			var registered = userHash == 0 ? false : true;
@@ -121,7 +112,7 @@ window.onload = function(){
 
 	registerBtn.addEventListener( 'click', function(ev){
 		ev.preventDefault()
-		contracts.poi.instance.register.sendTransaction({
+		dapp.poi.instance.register.sendTransaction({
 			from: accountSelector.value,
 			gas: 1000000
 		}, function(err, result){
@@ -131,11 +122,18 @@ window.onload = function(){
 		return false;
 	});
 
+	update()
+
 
 	function update () {
 		web3.eth.getBlockNumber( function(err, result){
 			latestBlock = result;
 			currentBlockNumber.innerHTML = latestBlock;
+		})
+
+		dapp.poi.instance.numUsers( function(err, result){
+			console.log( "numUsers: ", err, result);
+			candidateCount.innerHTML = result;
 		})
 
 		if (latestBlock && registrationBlock) {
