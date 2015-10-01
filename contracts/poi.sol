@@ -4,7 +4,8 @@ contract poi {
     mapping(bytes32 => address) public userAddress;
     mapping(address => uint) public userGroup;
 
-    bytes32 maxHash = sha3(address(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF));
+    // max value of a sha3 hash
+    bytes32 maxHash = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
     
     bool debug;
     uint blockNum;
