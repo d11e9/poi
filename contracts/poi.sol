@@ -1,28 +1,32 @@
 contract poi {
     
+    bool debug;
+    uint blockNum;
+
+    uint groupSize;
+    bytes32 entropy;
+    
     uint public numUsers;
     mapping(address => bytes32) public userHash;
-    mapping(bytes32 => address) public userAddress;
+    //mapping(bytes32 => address) public userAddress;
     mapping(address => uint) public userGroup;
 
     // max value of a sha3 hash
     bytes32 maxHash = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
     
+    enum Phases { Registration, Commitment, Verification } 
     event Registration(bytes32 userHash);
     event Commitment(bytes32 userHash, uint group);
     event Verification(bytes32 userHash);
+
+    Phases phase;
+    uint genesisBlock;
+    uint registrationBlock;
+    uint commitmentBlock;
+    uint validityBlock;
     
-    bool debug;
-    uint blockNum;
-    uint public groupSize;
-    uint public genesisBlock;
-    uint public registrationBlock;
-    uint public commitmentBlock;
-    uint public validityBlock;
-    bytes32 public entropy;
-    
-    function blockNumber() returns(uint){ if (debug) { return blockNum; } return block.number; }
-    function numGroups() returns(uint){ return numUsers / groupSize;}
+    function blockNumber() constant returns(uint){ if (debug) { return blockNum; } return block.number; }
+    function numGroups() constant returns(uint){ return numUsers / groupSize;}
     
     function poi(){
         debug = true;
@@ -32,6 +36,7 @@ contract poi {
         registrationBlock = genesisBlock + 7;
         commitmentBlock = registrationBlock + 3;
         validityBlock = commitmentBlock + 20;
+        phase = Phases.Registration;
     }
     
     function register() returns(bool success){
@@ -53,6 +58,8 @@ contract poi {
         if ((blockNumber() < registrationBlock) // registation period not yet over
         || (blockNumber() > commitmentBlock) // commitment period over
         || (userGroup[msg.sender] != 0)) return; // group already assigned
+
+        phase = Phases.Commitment;
         
         // deterministically assign user to random group (1-indexed)
         // based on number of users, group size and user hash;
@@ -65,19 +72,21 @@ contract poi {
         if ((blockNumber() < commitmentBlock) // commitment period not yet over
         || (blockNumber() > validityBlock) // verification period over
         || (userGroup[msg.sender] == 0)) return;
+
+        phase = Phases.Verification;
         
         // TODO :)
         address signer = ecrecover( data, v, r, s);
         // is the proof provided by a user in the same group
-        if (userHash[signer] == userHash[msg.sender]) {
+        if (userGroup[signer] == userGroup[msg.sender]) {
             Verification(userHash[msg.sender]);
             return true;
         }
     }
     
     function _incBlock() { if (debug) blockNum++; }
-    function _mgAddressHelper() returns(address){ return msg.sender; }
-    function _myGroupHelper() returns(uint group) {
+    function _myAddressHelper() constant returns(address){ return msg.sender; }
+    function _myGroupHelper() constant returns(uint group) {
         return userGroup[msg.sender];
     }
     
