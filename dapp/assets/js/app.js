@@ -118,13 +118,14 @@ window.onload = function(){
 			var userHash = web3.toBigNumber( result );
 			var registered = userHash == 0 ? false : true;
 			if (!registered) {
-				registerBtn.disabled = registered;
 				step1.className += ' active';
+			} else {
+				step1.className = step1.className.replace('active', '')
 			}
-			else step1.className = step1.className.replace('active', '')
+			registerBtn.disabled = registered;
 			registeredStatus.innerHTML = registered.toString();
+			update()
 		});
-		update()
 	});
 
 	registerBtn.addEventListener( 'click', function(ev){
