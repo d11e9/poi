@@ -47,6 +47,8 @@ window.onload = function(){
 
 	var startTime = document.querySelector('.startTime')
 	var registrationOver = document.querySelector('.registrationOver')
+	var commitmentOver = document.querySelector('.commitmentOver')
+	var verificationOver = document.querySelector('.verificationOver')
 
 	var latestBlock;
 	var genesisBlock;
@@ -54,6 +56,9 @@ window.onload = function(){
 	var registrationBlock;
 	var registrationTimestamp;
 	var commitmentBlock;
+	var commitmentTimestamp;
+	var verificationBlock;
+	var verificationTimestamp;
 
 	contractAddress.innerHTML = dapp.poi.instance.address;
 
@@ -74,6 +79,18 @@ window.onload = function(){
 	dapp.poi.instance.registrationBlock(function(err, blockNumber){
 		console.log("Registration block: ", blockNumber.toNumber())
 		registrationBlock = blockNumber;
+		update()
+	})
+
+	dapp.poi.instance.commitmentBlock(function(err, blockNumber){
+		console.log("Commitment block: ", blockNumber.toNumber())
+		commitmentBlock = blockNumber;
+		update()
+	})
+
+	dapp.poi.instance.validityBlock(function(err, blockNumber){
+		console.log("Verification block: ", blockNumber.toNumber())
+		verificationBlock = blockNumber;
 		update()
 	})
 
@@ -129,6 +146,41 @@ window.onload = function(){
 		web3.eth.getBlockNumber( function(err, result){
 			latestBlock = result;
 			currentBlockNumber.innerHTML = latestBlock;
+			web3.eth.getBlock( latestBlock, function(err, block){
+				console.log( "latest: ", err, block);
+				latestTimestamp = block.timestamp * 1000;
+				
+				if (latestBlock && registrationBlock) {
+					console.log("Blocks left for registration:", registrationBlock - latestBlock)
+					if (registrationBlock - latestBlock > 0) {
+						registrationTimestamp = (15 * 1000 * (registrationBlock - latestBlock)) + latestTimestamp
+						registrationOver.innerHTML = new Date(registrationTimestamp);
+					} else {
+						registrationOver.innerHTML = "Over";
+					}
+				}
+
+				if (latestBlock && commitmentBlock) {
+					console.log("Blocks left for commitment:", commitmentBlock - latestBlock)
+					if (commitmentBlock - latestBlock > 0) {
+						commitmentTimestamp = (15 * 1000 * (commitmentBlock - latestBlock)) + latestTimestamp
+						commitmentOver.innerHTML = new Date(commitmentTimestamp);
+					} else {
+						commitmentOver.innerHTML = "Over";
+					}
+				}
+
+				if (latestBlock && verificationBlock) {
+					console.log("Blocks left for verification:", verificationBlock - latestBlock)
+					if (verificationBlock - latestBlock > 0) {
+						verificationTimestamp = (15 * 1000 * (verificationBlock - latestBlock)) + latestTimestamp
+						verificationOver.innerHTML = new Date(verificationTimestamp);
+					} else {
+						verificationOver.innerHTML = "Over";
+					}
+				}
+			})
+
 		})
 
 		dapp.poi.instance.numUsers( function(err, result){
@@ -136,15 +188,7 @@ window.onload = function(){
 			candidateCount.innerHTML = result;
 		})
 
-		if (latestBlock && registrationBlock) {
-			console.log("Blocks left for registration:", registrationBlock - latestBlock)
-			if (registrationBlock - latestBlock > 0) {
-				registrationTimestamp = 15 * 1000 * (registrationBlock - latestBlock)
-				registrationOver.innerHTML = new Date(registrationTimestamp);
-			} else {
-				registrationOver.innerHTML = "Over";
-			}
-		}
+		
 	}
 
 }
