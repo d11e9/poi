@@ -20,10 +20,10 @@ contract poi {
     event Verification(bytes32 userHash);
 
     Phases phase;
-    uint genesisBlock;
-    uint registrationBlock;
-    uint commitmentBlock;
-    uint validityBlock;
+    uint public genesisBlock;
+    uint public registrationBlock;
+    uint public commitmentBlock;
+    uint public validityBlock;
     
     function blockNumber() constant returns(uint){ if (debug) { return blockNum; } return block.number; }
     function numGroups() constant returns(uint){ return numUsers / groupSize;}

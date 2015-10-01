@@ -6,7 +6,7 @@
 		<title>POI - Proof of Concept</title>
 		<link rel="stylesheet" href="assets/css/style.css" />
 		<script src="node_modules/web3/dist/web3.js"></script>
-		<script src="assets/js/POIContract.js"></script>
+		<script src="assets/js/Contracts.js"></script>
 	</head>
 	<body>
 		
@@ -14,10 +14,10 @@
 			<h1>POI - Proof of Individuality</h1>
 			<p><em><strong>Proof of concept DApp</strong></em></p>
 			<div class="status card">
-				<p>Current round: <span class="roundNumber">#0</span></p>
-				<p>Registration started: <span class="startTime">Thu Jan 01 1970 00:00:00 GMT+0000 (GMT Standard Time)</span></p>
-				<p>Participating entities: <span class="candidateCount">42</span></p>
-				<p>POI Contract address: <span class="contractAddress">0x692a70d2e424a56d2c6c27aa97d1a86395877b3a</span></p>
+				<p>Current round: #<span class="roundNumber">0</span> Current block: #<span class="blockNumber"></span></p>
+				<p>Registration started: <span class="startTime"></span></p>
+				<p>Participating entities: <span class="candidateCount"></span></p>
+				<p>POI Contract address: <span class="contractAddress"></span></p>
 			</div>
 		</div>
 
@@ -33,7 +33,7 @@
 			</fieldset>
 			<fieldset class="step1 card active">
 				<h2>Step 1:</h2>
-				<div class="status">Time left: {{ timeTillRegistrationEnds }}</div>
+				<div class="status">Time left: <span class="registrationOver">{{ timeTillRegistrationEnds }}</span></div>
 				<p>Register to take part in the upcoming POI round.</p>
 				<div class="details">Registered: <span id="registered">false</span></div>
 				<button id="register" disabled>Register</button>
